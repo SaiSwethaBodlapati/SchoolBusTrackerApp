@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <h2>School Bus Tracker <span>🚌</span></h2>
-        <form id="registerForm" onsubmit="return validateForm()">
+        <form id="registerForm" onsubmit="return handleFormSubmit(event)">
             <div class="input-row">
                 <label>First Name:</label>
                 <input type="text" id="firstName" name="firstName" required>
@@ -45,11 +45,25 @@
                 
                 <label>ZIP Code:</label>
                 <input type="text" id="zipCode" name="zipCode" required>
+
+                <label>Email:</label>
+                <input type="text" id="city" name="city" required>
+
+                <label>Password:</label>
+                <input type="text" id="city" name="city" required>
+                
+        
             </fieldset>
             
-            <button type="submit" class="submit-btn">Next</button>
+            <button type="submit" class="submit-btn">Submit</button>
         </form>
-    </div>
+
+        <p class="login-link">
+            Already have an account? <a href="login.html">SignUp</a>
+            
+    
+        </p>
+    
     <script src="script.js"></script>
 </body>
 </html>

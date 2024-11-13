@@ -2,8 +2,8 @@
 body {
     font-size: 20px;
     font-family: Georgia, 'Times New Roman', Times, serif;
-    padding: 20px;
     margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -24,7 +24,7 @@ body {
 
 /* Style the heading */
 .login h1 {
-    font-size: 20px;
+    font-size: 24px;
     margin-bottom: 20px;
     color: #333;
 }
@@ -39,7 +39,8 @@ body {
 }
 
 /* Style input fields */
-.login input[type="text"] {
+.login input[type="text"],
+.login input[type="password"] {
     width: 100%;
     padding: 7px;
     margin-bottom: 15px;
@@ -49,12 +50,13 @@ body {
 }
 
 /* Add focus effect on input fields */
-.login input[type="text"]:focus {
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
     border-color: #007bff;
     outline: none;
 }
 
-/* Button styling (optional if you have a submit button) */
+/* Button styling */
 .login button {
     width: 100%;
     padding: 10px;
@@ -68,4 +70,20 @@ body {
 
 .login button:hover {
     background-color: #0056b3;
+}
+
+/* Style the signup link */
+.signup-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
 }
