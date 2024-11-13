@@ -10,7 +10,12 @@ body {
     height: 100vh;
     background-color: #f4f4f9;
 }
-
+body {
+    background-image: url('bus.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 /* Style the login container */
 .login {
     border: 2px solid black;

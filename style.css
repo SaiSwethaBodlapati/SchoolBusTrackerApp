@@ -4,7 +4,12 @@
     padding: 0;
     font-family: Arial, sans-serif;
 }
-
+body {
+    background-image: url('bus.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
 body {
     display: flex;
     align-items: center;
