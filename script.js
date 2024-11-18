@@ -30,9 +30,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (response.ok) {
-                    // Store tempId for step 2
-                    localStorage.setItem('registrationTempId', data.tempId);
-                    window.location.href = 'signup2.html';
+                    // Ensure tempId is returned and valid
+                    if (data.tempId) {
+                        localStorage.setItem('registrationTempId', data.tempId);
+                        window.location.href = 'signup2.html'; // Redirect to step 2
+                    } else {
+                        alert('Temporary registration ID is missing. Please try again.');
+                    }
                 } else {
                     alert(data.error || 'Step 1 registration failed. Please try again.');
                 }
@@ -42,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
     // For the second registration form
     const form2 = document.getElementById('registerForm2');
     if (form2) {
@@ -53,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!tempId) {
                 alert('Session expired. Please restart the registration process.');
-                window.location.href = 'signup1.html';
+                window.location.href = 'signup1.html'; // Redirect back to step 1
                 return;
             }
 
@@ -68,6 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmPassword: document.getElementById('confirmPassword').value,
             };
 
+            // Password validation
             if (formData.password !== formData.confirmPassword) {
                 alert('Passwords do not match. Please try again.');
                 return;
@@ -86,8 +92,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (response.ok) {
                     alert('Registration successful!');
-                    localStorage.removeItem('registrationTempId');
-                    window.location.href = 'login.html';
+                    localStorage.removeItem('registrationTempId'); // Clear session
+                    window.location.href = 'login.html'; // Redirect to login page
                 } else {
                     if (data.error === 'Registration session expired or invalid') {
                         alert('Your session has expired. Please restart the registration process.');
@@ -128,8 +134,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (response.ok) {
                     alert('Login successful!');
-                    // Redirect to dashboard or home page
-                    window.location.href = 'dashboard.html';
+                    window.location.href = 'dashboard.html'; // Redirect to dashboard
                 } else {
                     alert(data.error || 'Login failed. Please check your credentials and try again.');
                 }
@@ -139,5 +144,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
 });
