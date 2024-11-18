@@ -1,0 +1,20 @@
+{
+  "name": "schoolbustrackerapp",
+  "version": "1.0.0",
+  "description": "SchoolBusTrackerApp is a Windows application designed to improve school transportation safety and reliability. With real-time GPS tracking, parents and administrators can monitor bus locations, reducing wait times and enhancing punctuality.\r ## Team Members\r - Sai Pooja Reddy Palle\r - Sushma Vadlamudi\r - Sai Swetha Bodlapati\r - Sai Shivani Yashaswini",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "mongoose": "^8.8.2",
+    "nodemon": "^3.1.7",
+    "path": "^0.12.7"
+  }
+}
