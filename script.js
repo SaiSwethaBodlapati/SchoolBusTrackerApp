@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (!tempId) {
                 alert('Session expired. Please restart the registration process.');
-                window.location.href = 'signup1.html'; // Redirect back to step 1
+                window.location.href = 'signup.html'; // Redirect back to step 1
                 return;
             }
 
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.error === 'Registration session expired or invalid') {
                         alert('Your session has expired. Please restart the registration process.');
                         localStorage.removeItem('registrationTempId');
-                        window.location.href = 'signup1.html';
+                        window.location.href = 'signup.html';
                     } else {
                         alert(data.error || 'Step 2 registration failed. Please try again.');
                     }
