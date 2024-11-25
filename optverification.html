@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Bus Tracker </title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styleotp.css">
+    <script 
+        type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
 </head>
 <body>
-    <div class="container">
+    <div class="container step1">
         <h2>School Bus Tracker - Verify Email <span>🚌</span></h2>
         <br/>
         <h4>Enter your email address</h4>   
@@ -15,11 +19,39 @@
         <p>You will recieve an email with one-time password</p>
         <br/>
         <div class="form-group">
-            <input type="email" id="email" name="email" placeholder="Email Address: ">
+            <input type="email" id="emailAddress" placeholder="Email Address: " onkeyup="validateEmail(this.value)">
         </div>      
         <br>         
-        <button type="submit" class="submit-btn">Next</button>
+        <button type="submit" class="nextButton">Next</button>
     </div>
-    <script src="script.js"></script>
+    <div class="container step2">
+        <h2>School Bus Tracker - Verify Email <span>🚌</span></h2>
+        <br/>
+        <h4>Enter one-time-password</h4>               
+        <p>A one-time password has been sent to<span id="verifyEmail"></span></p>
+        <br/>
+        <div class="otp-form">
+            <p>Enter the 4 digit code we sent you via email to continue</p>
+            <div class="otp-group">
+                <input type="number" >
+                <input type="number" >
+                <input type="number" >
+                <input type="number" >
+            </div>
+            <p>Not your email?/Didn't receive code?</p>
+            <a href="javascript:void(0)">Try Again</a>
+        </div>      
+        <br>         
+        <button type="submit" class="verifyButton">Verify</button>
+    </div>
+    <div class="container step3">
+        <h2>Congratulations</h2>
+        <p>Welcome to Home Page</p>
+        <img src="image.png">
+        <h2>Thank You</h2>
+        <p>Your OTP verification has been completed successfully!</p>
+        
+    </div>
+    <script src="otpscript.js"></script>
 </body>
 </html>
