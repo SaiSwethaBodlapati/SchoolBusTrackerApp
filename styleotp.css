@@ -5,9 +5,13 @@
   font-family: "Poppins", sans-serif;
   box-sizing: border-box;
 }
-
 body {
-  background: lightblue;
+    background-image: url('bus.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+body {
   min-height: 100vh;
   display: flex;
   align-items:center;
@@ -86,4 +90,22 @@ button.disable{
     opacity: 0.6;
     pointer-events: none;
     user-select: none; 
+}
+.error-shake{
+    animation: shake 0.2s ease-in-out 0s 2;
+}
+
+@keyframes shake {
+    0%{
+        margin-left: 0rem;
+    }
+    25%{
+        margin-left: 0.5rem;
+    }
+    75%{
+        margin-left: -0.5rem;
+    }
+    100%{
+        margin-left: 0rem;
+    }
 }
