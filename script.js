@@ -1,76 +1,29 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // For the first registration form
-    const form1 = document.getElementById('registerForm');
-    if (form1) {
-        form1.addEventListener('submit', async function (event) {
+    // Get the single registration form
+    const form = document.getElementById('registerForm');
+    if (form) {
+        form.addEventListener('submit', async function (event) {
             event.preventDefault();
 
+            // Convert all input values to strings explicitly
             const formData = {
-                firstName: document.getElementById('firstName').value,
-                lastName: document.getElementById('lastName').value,
-                class: document.getElementById('class').value,
-                busStop: document.getElementById('busStop').value,
-                studentId: document.getElementById('studentId').value,
-                busPassId: document.getElementById('busPassId').value,
-                addressLine1: document.getElementById('addressLine1').value,
-                addressLine2: document.getElementById('addressLine2').value,
-                city: document.getElementById('city').value,
-                zipCode: document.getElementById('zipCode').value,
-            };
-
-            try {
-                const response = await fetch('http://localhost:3000/api/register/step1', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Ensure tempId is returned and valid
-                    if (data.tempId) {
-                        localStorage.setItem('registrationTempId', data.tempId);
-                        window.location.href = 'signup2.html'; // Redirect to step 2
-                    } else {
-                        alert('Temporary registration ID is missing. Please try again.');
-                    }
-                } else {
-                    alert(data.error || 'Step 1 registration failed. Please try again.');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while submitting Step 1. Please try again.');
-            }
-        });
-    }
-
-    // For the second registration form
-    const form2 = document.getElementById('registerForm2');
-    if (form2) {
-        form2.addEventListener('submit', async function (event) {
-            event.preventDefault();
-
-            // Retrieve tempId from localStorage
-            const tempId = localStorage.getItem('registrationTempId');
-
-            if (!tempId) {
-                alert('Session expired. Please restart the registration process.');
-                window.location.href = 'signup.html'; // Redirect back to step 1
-                return;
-            }
-
-            const formData = {
-                tempId: tempId,
-                fatherName: document.getElementById('fatherName').value,
-                fatherPhone: document.getElementById('fatherPhone').value,
-                motherName: document.getElementById('motherName').value,
-                motherPhone: document.getElementById('motherPhone').value,
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
-                confirmPassword: document.getElementById('confirmPassword').value,
+                firstName: String(document.getElementById('firstName').value),
+                lastName: String(document.getElementById('lastName').value),
+                class: String(document.getElementById('class').value),
+                busStop: String(document.getElementById('busStop').value),
+                studentId: String(document.getElementById('studentId').value),
+                busPassId: String(document.getElementById('busPassId').value),
+                addressLine1: String(document.getElementById('addressLine1').value),
+                addressLine2: String(document.getElementById('addressLine2').value),
+                city: String(document.getElementById('city').value),
+                zipCode: String(document.getElementById('zipCode').value),
+                fatherName: String(document.getElementById('fatherName').value),
+                fatherPhone: String(document.getElementById('fatherPhone').value),
+                motherName: String(document.getElementById('motherName').value),
+                motherPhone: String(document.getElementById('motherPhone').value),
+                username: String(document.getElementById('username').value),
+                password: String(document.getElementById('password').value),
+                confirmPassword: String(document.getElementById('confirmPassword').value),
             };
 
             // Password validation
@@ -80,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             try {
-                const response = await fetch('http://localhost:3000/api/register/step2', {
+                const response = await fetch('http://localhost:3000/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -91,21 +44,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert('Registration successful!');
-                    localStorage.removeItem('registrationTempId'); // Clear session
+                    alert('Registration completed successfully!');
                     window.location.href = 'login.html'; // Redirect to login page
                 } else {
-                    if (data.error === 'Registration session expired or invalid') {
-                        alert('Your session has expired. Please restart the registration process.');
-                        localStorage.removeItem('registrationTempId');
-                        window.location.href = 'signup.html';
-                    } else {
-                        alert(data.error || 'Step 2 registration failed. Please try again.');
-                    }
+                    console.error('Server responded with error:', data);
+                    alert(data.error || 'Registration failed. Please try again.');
                 }
             } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while submitting Step 2. Please try again.');
+                console.error('Network error or other issue:', error);
+                alert('An error occurred during registration. Please check the console for details.');
             }
         });
     }
@@ -116,9 +63,10 @@ document.addEventListener('DOMContentLoaded', function () {
         loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
 
+            // Convert all input values to strings explicitly
             const formData = {
-                username: document.getElementById('username').value,
-                password: document.getElementById('password').value,
+                username: String(document.getElementById('username').value),
+                password: String(document.getElementById('password').value),
             };
 
             try {
@@ -140,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred while logging in. Please try again.');
+                alert('An error occurred during login. Please try again.');
             }
         });
     }

@@ -1,121 +1,164 @@
+/* General Reset */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
 }
+
+/* Body Styling */
 body {
-    background-image: url('bus.jpeg');
+    background-image: url('bus.jpeg'); /* Replace with your image path */
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-}
-body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    background-color: #f5f5f5;
+    background-attachment: fixed;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.5;
 }
 
+/* Container Styling */
 .container {
-    width: 600px;
+    max-width: 800px;
+    margin: 20px auto;
     padding: 20px;
     background-color: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ddd;
 }
 
+/* Form Heading */
 h2 {
     text-align: center;
     margin-bottom: 20px;
-    font-size: 24px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
 }
 
 h2 span {
-    font-size: 24px;
+    font-size: 28px;
 }
 
+/* Form Styling */
 form {
     display: flex;
     flex-direction: column;
+    gap: 20px;
 }
 
+/* Fieldset Styling */
+fieldset {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+legend {
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0 10px;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+/* Input Row Styling */
 .input-row {
     display: flex;
-    justify-content: space-between;
-    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
     margin-bottom: 15px;
 }
 
 .input-row label {
     flex: 1;
-    display: block;
     font-weight: bold;
+    font-size: 14px;
 }
 
 .input-row input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
+    flex: 2;
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
 }
 
-.address-fieldset {
-    border: 1px solid #ccc;
-    border-radius: 8px;
+.input-row input:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Label and Input for Single Fields (like Address & Account Info) */
+fieldset label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+fieldset input {
+    width: 100%;
     padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
     margin-bottom: 15px;
 }
 
-.address-fieldset legend {
-    padding: 0 10px;
-    font-weight: bold;
-}
-
-.address-fieldset label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-.address-fieldset input {
-    width: 100%;
-    padding: 8px;
-    margin-top: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
+/* Submit Button */
 .submit-btn {
     width: 100%;
-    padding: 10px;
+    padding: 12px 20px;
     font-size: 16px;
     color: white;
-    background-color: #333;
+    background-color: #007bff;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
 }
 
 .submit-btn:hover {
-    background-color: #555;
+    background-color: #0056b3;
 }
 
+/* Login Link */
 .login-link {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 14px;
+    color: #666;
 }
 
 .login-link a {
     color: #007bff;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .login-link a:hover {
     text-decoration: underline;
+}
+
+/* Media Query for Mobile */
+@media (max-width: 768px) {
+    .input-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .input-row label {
+        text-align: left;
+    }
 }

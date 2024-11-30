@@ -1,235 +1,124 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcryptjs = require('bcryptjs');
+const bodyParser = require('body-parser');
 const cors = require('cors');
-const path = require('path');
+const path = require('path'); // Required for file path handling
+
 const app = express();
 
 // Middleware
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
-
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, '')));
-
-// Add this route to serve your HTML files
-app.get('/:page.html', (req, res) => {
-    res.sendFile(path.join(__dirname, '', `${req.params.page}.html`));
-});
+app.use(express.static(path.join(__dirname, 'SchoolBusTrackerApp'))); // Serve static files
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/school_bus_tracker', {
+mongoose.connect('mongodb://localhost:27017/schoolbus', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => {
-    console.log('Connected to MongoDB');
-}).catch((err) => {
-    console.error('MongoDB connection error:', err);
+    useUnifiedTopology: true,
 });
 
-// Student Schema
-const studentSchema = new mongoose.Schema({
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+    console.log('Connected to MongoDB');
+});
+
+// User Schema
+const userSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
     class: String,
     busStop: String,
-    studentId: { type: String, unique: true },
-    busPassId: { type: String, unique: true },
-    address: {
-        line1: String,
-        line2: String,
-        city: String,
-        zipCode: String
-    },
-    parentInfo: {
-        fatherName: String,
-        fatherPhone: String,
-        motherName: String,
-        motherPhone: String
-    },
-    accountInfo: {
-        username: { type: String, unique: true },
-        password: String // Only hashed password is stored
-    }
+    studentId: String,
+    busPassId: String,
+    addressLine1: String,
+    addressLine2: String,
+    city: String,
+    zipCode: String,
+    fatherName: String,
+    fatherPhone: String,
+    motherName: String,
+    motherPhone: String,
+    username: { type: String, unique: true },
+    password: String,
 });
 
-const Student = mongoose.model('Student', studentSchema);
+const User = mongoose.model('User', userSchema);
 
-// Store temporary registration data
-let temporaryRegistrationData = new Map();
+// Serve the homepage (root URL)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'SchoolBusTrackerApp', 'home.html'));
+});
 
-// Registration endpoint - Step 1
-app.post('/api/register/step1', async (req, res) => {
+// Registration API
+app.post('/api/register', async (req, res) => {
     try {
-        const {
-            firstName,
-            lastName,
-            class: studentClass,
-            busStop,
-            studentId,
-            busPassId,
-            addressLine1,
-            addressLine2,
-            city,
-            zipCode
-        } = req.body;
-
-        // Validate student ID and bus pass ID uniqueness
-        const existingStudent = await Student.findOne({
-            $or: [
-                { studentId: studentId },
-                { busPassId: busPassId }
-            ]
-        });
-
-        if (existingStudent) {
-            return res.status(400).json({
-                error: 'Student ID or Bus Pass ID already exists'
-            });
-        }
-
-        // Generate a temporary ID for this registration
-        const tempId = Date.now().toString();
-
-        // Store in temporary storage
-        temporaryRegistrationData.set(tempId, {
-            firstName,
-            lastName,
-            class: studentClass,
-            busStop,
-            studentId,
-            busPassId,
-            address: {
-                line1: addressLine1,
-                line2: addressLine2,
-                city,
-                zipCode
-            }
-        });
-
-        res.json({ 
-            message: 'Step 1 completed successfully',
-            tempId: tempId 
-        });
+        const user = new User(req.body);
+        await user.save();
+        res.status(200).json({ message: 'User registered successfully!' });
     } catch (error) {
-        console.error('Step 1 error:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error(error);
+        res.status(400).json({ error: 'Failed to register user. Username may already exist.' });
     }
 });
 
-// Registration endpoint - Step 2 (Final)
-app.post('/api/register/step2', async (req, res) => {
-    try {
-        const {
-            tempId,
-            fatherName,
-            fatherPhone,
-            motherName,
-            motherPhone,
-            username,
-            password,
-            confirmPassword
-        } = req.body;
-
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            return res.status(400).json({
-                error: 'Password and confirm password do not match'
-            });
-        }
-
-        // Get step 1 data
-        const step1Data = temporaryRegistrationData.get(tempId);
-        if (!step1Data) {
-            return res.status(400).json({ error: 'Registration session expired or invalid' });
-        }
-
-        // Check if username already exists
-        const existingUsername = await Student.findOne({
-            'accountInfo.username': username
-        });
-
-        if (existingUsername) {
-            return res.status(400).json({
-                error: 'Username already exists'
-            });
-        }
-
-        // Hash password
-        const salt = await bcryptjs.genSalt(10);
-        const hashedPassword = await bcryptjs.hash(password, salt);
-
-        // Combine step 1 and step 2 data
-        const studentData = {
-            ...step1Data,
-            parentInfo: {
-                fatherName,
-                fatherPhone,
-                motherName,
-                motherPhone
-            },
-            accountInfo: {
-                username,
-                password: hashedPassword
-            }
-        };
-
-        // Create new student record
-        const student = new Student(studentData);
-        await student.save();
-
-        // Clear temporary data
-        temporaryRegistrationData.delete(tempId);
-
-        res.json({
-            message: 'Registration completed successfully',
-            studentId: student._id
-        });
-    } catch (error) {
-        console.error('Step 2 error:', error);
-        res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// Login endpoint
+// Login API
 app.post('/api/login', async (req, res) => {
+    const { username, password } = req.body;
+
     try {
-        const { username, password } = req.body;
-
-        // Find user by username
-        const student = await Student.findOne({
-            'accountInfo.username': username
-        });
-
-        if (!student) {
-            return res.status(401).json({
-                error: 'Invalid username or password'
-            });
+        const user = await User.findOne({ username, password });
+        if (user) {
+            res.status(200).json({ message: 'Login successful!' });
+        } else {
+            res.status(401).json({ error: 'Invalid username or password.' });
         }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'An error occurred during login.' });
+    }
+});
 
-        // Check password
-        const validPassword = await bcryptjs.compare(
-            password,
-            student.accountInfo.password
+// Password Reset API
+app.post('/api/reset-password', async (req, res) => {
+    const { username, newPassword } = req.body;
+
+    if (!username || !newPassword) {
+        return res.status(400).json({ error: 'Username and new password are required.' });
+    }
+
+    try {
+        // Find the user by username and update the password
+        const user = await User.findOneAndUpdate(
+            { username: username }, // Find by username
+            { password: newPassword }, // Update password
+            { new: true } // Return the updated document
         );
 
-        if (!validPassword) {
-            return res.status(401).json({
-                error: 'Invalid username or password'
-            });
+        if (user) {
+            res.status(200).json({ message: 'Password updated successfully!' });
+        } else {
+            res.status(404).json({ error: 'User not found.' });
         }
-
-        res.json({
-            message: 'Login successful',
-            studentId: student._id
-        });
     } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ error: 'Server error' });
+        console.error('Error updating password:', error);
+        res.status(500).json({ error: 'An error occurred while updating the password.' });
     }
 });
 
-const PORT = process.env.PORT || 3000;
+// Serve other HTML files dynamically
+app.get('/:page', (req, res) => {
+    const { page } = req.params;
+    const filePath = path.join(__dirname, 'SchoolBusTrackerApp', `${page}.html`);
+    res.sendFile(filePath, (err) => {
+        if (err) {
+            res.status(404).send('Page not found');
+        }
+    });
+});
+
+// Start Server
+const PORT = 3000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server running on http://localhost:${PORT}`);
 });
