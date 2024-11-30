@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Bus Tracker-Dashboard </title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            
+            color: black;
+            display: flex;
+            background-color: royalblue;
+            justify-content: space-between;
+            align-content:  center;
+            padding: 10px 20px;
+        }
+
+        header h1 {
+            font-size: 22px;
+        }
+
+        .icons {
+            gap: 20px;
+            display: flex;
+           
+        }
+
+        .icons a img {
+            height: 30px;
+            width: 30px;
+            
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .welcome {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+            
+        }
+        .icons a {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color:black;
+            
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>School Bus Tracker Dashboard</h1>
+        <div class="icons">
+            <a href="login.html">
+                <img src="https://img.icons8.com/color/48/user.png" alt="Login">
+                <span>Login</span>
+            </a>
+            <a href="contact.html">
+                <img src="https://img.icons8.com/color/48/contact-card.png" alt="Contact Us">
+                <span>Contact Us</span>
+            </a>
+            <a href="about.html">
+                <img src="https://img.icons8.com/color/48/info.png" alt="About">
+                <span>About</span>
+            </a>
+            <a href="support.html">
+                <img src="https://img.icons8.com/color/48/help.png" alt="Support">
+                <span>Support</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <p class="welcome">Welcome to the School Bus Tracker Dashboard! Use the icons above to navigate to different sections of the site.</p>
+    </main>
+
+    <script>
+        console.log("Dashboard loaded Successfully");
+    </script>
+</body>
+</html>
