@@ -1,94 +1,129 @@
-/* Apply general styles to the whole document */
-body {
-    font-size: 20px;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+/* General Reset */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f4f4f9;
-}
-body {
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Body Styling */
+  body {
     background-image: url('bus.jpeg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-}
-/* Style the login container */
-.login {
-    border: 2px solid black;
-    border-radius: 8px;
-    padding: 20px;
-    width: 300px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-/* Style the heading */
-.login h1 {
-    font-size: 24px;
-    margin-bottom: 20px;
+    background-attachment: fixed;
     color: #333;
-}
-
-/* Style labels for email and password */
-.login label {
-    font-size: 16px;
-    color: #555;
-    display: block;
-    margin-bottom: 5px;
-    text-align: left;
-}
-
-/* Style input fields */
-.login input[type="text"],
-.login input[type="password"] {
-    width: 100%;
-    padding: 7px;
-    margin-bottom: 15px;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.5;
+  }
+  
+  /* Container Styling */
+  .container {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ddd;
+  }
+  
+  /* Form Heading */
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  h2 span {
+    font-size: 28px;
+  }
+  
+  /* Form Styling */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Input Row Styling */
+  .input-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .input-col label {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .input-col input {
+    padding: 10px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-}
-
-/* Add focus effect on input fields */
-.login input[type="text"]:focus,
-.login input[type="password"]:focus {
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+  .input-col input:focus {
     border-color: #007bff;
     outline: none;
-}
-
-/* Button styling */
-.login button {
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+  }
+  
+  /* Submit Button */
+  .submit-btn {
     width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    padding: 12px 20px;
     font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-}
-
-.login button:hover {
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-btn:hover {
     background-color: #0056b3;
-}
-
-/* Style the signup link */
-.signup-link {
+  }
+  
+  /* Login Link */
+  .register-link {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 20px;
     font-size: 14px;
-}
-
-.signup-link a {
+    color: #666;
+  }
+  
+  .register-link a {
     color: #007bff;
     text-decoration: none;
-}
-
-.signup-link a:hover {
+    font-weight: bold;
+  }
+  
+  .register-link a:hover {
     text-decoration: underline;
-}
+  }
+  
+  /* Media Query for Mobile */
+  @media (max-width: 480px) {
+    .container {
+      max-width: 90%;
+      padding: 15px;
+    }
+  
+    h2 {
+      font-size: 24px;
+    }
+  
+    h2 span {
+      font-size: 24px;
+    }
+  }
