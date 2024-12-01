@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Bus Tracker-Dashboard</title>
+    <title>School Bus Tracker-Contact</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,20 +44,6 @@
             font-size: 16px;
         }
 
-        .language-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .language-buttons button {
-            background-color: #ffa500;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         .main-content {
             display: flex;
             align-items: center;
@@ -73,22 +59,44 @@
             margin-bottom: 20px;
         }
 
-        .video-container {
-            margin-top: 20px;
+        .contact-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
         }
 
-        .video-container iframe {
-            width: 80%;
-            height: 400px;
+        .contact-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
 
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .contact-form button {
+            background-color: #ffa500;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <header>
         <h1>
             <img src="busicon.png" alt="School Bus Icon">
-
             School Bus Tracker
         </h1>
         <nav>
@@ -96,15 +104,23 @@
             <a href="about.html">About</a>
             <a href="contact.html">Contact</a>
             <a href="login.html">LOG IN</a>
-        </nav>    
+
+        </nav>
     </header>
 
     <main class="main-content">
-        <h2>Welcome to School Bus Tracker App</h2>
+        <h2>Contact Us</h2>
+        <p>Have questions or feedback about the School Bus Tracker App? We're here to help!</p>
+        <h3>Contact Options:</h3>
+        <ul>
+          <li><b>Email: </b> schoolbus@nwmissouri.edu  (questions about app etc)</li>
+          <br>
+          <li><b>Phone: </b> (660) 562-1212 (Mon-Fri, 8:00 AM - 5:00 PM PST)</li>
+        </ul>
     </main>
 
     <script>
-        console.log("Dashboard loaded Successfully");
+        console.log("Contact page loaded");
     </script>
 </body>
 </html>
