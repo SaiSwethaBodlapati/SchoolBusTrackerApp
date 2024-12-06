@@ -10,7 +10,7 @@ const app = express();
 // Middleware
 app.use(bodyParser.json());
 app.use(cors());
-app.use(express.static(path.join(__dirname, 'SchoolBusTrackerApp'))); // Serve static files
+app.use(express.static(path.join(__dirname))); // Serve static files
 
 // MongoDB connection
 mongoose.connect('mongodb://localhost:27017/schoolbus', {
@@ -48,7 +48,7 @@ const User = mongoose.model('User', userSchema);
 
 // Serve the homepage (root URL)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'SchoolBusTrackerApp', 'home.html'));
+    res.sendFile(path.join(__dirname, 'login.html'));
 });
 
 // Registration API
@@ -128,7 +128,7 @@ app.post('/api/reset-password', async (req, res) => {
 // Serve other HTML files dynamically
 app.get('/:page', (req, res) => {
     const { page } = req.params;
-    const filePath = path.join(__dirname, 'SchoolBusTrackerApp', `${page}.html`);
+    const filePath = path.join(__dirname, `${page}.html`);
     res.sendFile(filePath, (err) => {
         if (err) {
             res.status(404).send('Page not found');
