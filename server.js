@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const path = require('path'); // Required for file path handling
+const path = require('path');
+const bcrypt = require('bcrypt'); // Import bcrypt for hashing passwords
 
 const app = express();
 
@@ -40,7 +41,7 @@ const userSchema = new mongoose.Schema({
     motherName: String,
     motherPhone: String,
     username: { type: String, unique: true },
-    password: String,
+    password: String, // Password will be hashed
 });
 
 const User = mongoose.model('User', userSchema);
@@ -53,11 +54,19 @@ app.get('/', (req, res) => {
 // Registration API
 app.post('/api/register', async (req, res) => {
     try {
-        const user = new User(req.body);
+        // Hash the password before saving
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(req.body.password, saltRounds);
+
+        const user = new User({
+            ...req.body,
+            password: hashedPassword,
+        });
+
         await user.save();
         res.status(200).json({ message: 'User registered successfully!' });
     } catch (error) {
-        console.error(error);
+        console.error('Error registering user:', error);
         res.status(400).json({ error: 'Failed to register user. Username may already exist.' });
     }
 });
@@ -67,14 +76,20 @@ app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        const user = await User.findOne({ username, password });
+        const user = await User.findOne({ username });
         if (user) {
-            res.status(200).json({ message: 'Login successful!' });
+            // Compare the hashed password
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (isPasswordValid) {
+                res.status(200).json({ message: 'Login successful!' });
+            } else {
+                res.status(401).json({ error: 'Invalid username or password.' });
+            }
         } else {
-            res.status(401).json({ error: 'Invalid username or password.' });
+            res.status(404).json({ error: 'User not found.' });
         }
     } catch (error) {
-        console.error(error);
+        console.error('Login error:', error);
         res.status(500).json({ error: 'An error occurred during login.' });
     }
 });
@@ -88,10 +103,14 @@ app.post('/api/reset-password', async (req, res) => {
     }
 
     try {
-        // Find the user by username and update the password
+        // Hash the new password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        // Update the user's password in the database
         const user = await User.findOneAndUpdate(
-            { username: username }, // Find by username
-            { password: newPassword }, // Update password
+            { username: username }, // Find the user by username
+            { password: hashedPassword }, // Update the password
             { new: true } // Return the updated document
         );
 
@@ -101,7 +120,7 @@ app.post('/api/reset-password', async (req, res) => {
             res.status(404).json({ error: 'User not found.' });
         }
     } catch (error) {
-        console.error('Error updating password:', error);
+        console.error('Password reset error:', error);
         res.status(500).json({ error: 'An error occurred while updating the password.' });
     }
 });
