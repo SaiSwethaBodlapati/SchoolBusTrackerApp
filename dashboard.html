@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School Bus Tracker-Dashboard</title>
+    <title>School Bus Tracker - Support</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,20 +45,6 @@
             font-size: 16px;
         }
 
-        .language-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .language-buttons button {
-            background-color: #ffa500;
-            border: none;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
         .main-content {
             display: flex;
             align-items: center;
@@ -65,46 +52,46 @@
             flex-direction: column;
             padding: 20px;
             text-align: center;
+            background-image: url('bus.jpeg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            height: calc(100vh - 60px); /* Adjust height to fit below header */
         }
 
         .main-content h2 {
             color: #000;
             font-size: 36px;
             margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent background for better readability */
+            padding: 10px;
+            border-radius: 5px;
         }
-
-        .video-container {
-            margin-top: 20px;
-        }
-
-        .video-container iframe {
-            width: 80%;
-            height: 400px;
-        }
-
     </style>
 </head>
+
 <body>
     <header>
-        <h1>
-            <img src="busicon.png" alt="School Bus Icon">
-
-            School Bus Tracker
-        </h1>
+        <nav>
+            <h1>
+                <img src="busicon.png" alt="School Bus Icon">
+                <a href="dashboard.html" style="color: white; text-decoration: none;"><h1>School Bus Tracker</h1></a>
+            </h1>
+        </nav>
         <nav>
             <a href="support.html">Support</a>
             <a href="about.html">About</a>
             <a href="contact.html">Contact</a>
-            <!-- <a href="login.html">LOG IN</a> -->
-        </nav>    
+        </nav>
     </header>
 
     <main class="main-content">
-        <h2>Welcome to School Bus Tracker App</h2>
+        <h2>Welcome to the Support Page</h2>
     </main>
 
     <script>
-        console.log("Dashboard loaded Successfully");
+        console.log("Support page loaded");
     </script>
 </body>
+
 </html>
