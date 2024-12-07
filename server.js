@@ -13,7 +13,10 @@ app.use(cors());
 app.use(express.static(path.join(__dirname))); // Serve static files
 
 // MongoDB connection
-
+mongoose.connect('mongodb://localhost:27017/schoolbus', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
