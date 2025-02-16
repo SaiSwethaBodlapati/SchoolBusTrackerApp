@@ -78,6 +78,21 @@ const generateOtpTemplate = (otp) => `
 
 `;
 
+const generateDriverWelcomeTemplate = (email, firstName, password) => `
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <h2 style="color: #0056b3;">Welcome, ${firstName}!</h2>
+        <p>Thank you for registering as a driver on the <strong>School Bus Tracker</strong> platform.</p>
+        <p>Your default username is:</p>
+        <p style="text-align: center; font-size: 18px; font-weight: bold; color: #333;">${email}</p>
+        <p>Your default password is:</p>
+        <p style="text-align: center; font-size: 18px; font-weight: bold; color: #333;">${password}</p>
+        <p>We are excited to have you on board and look forward to working with you!</p>
+        <hr style="border: none; border-top: 1px solid #ddd;" />
+        <p style="font-size: 12px; color: #777;">If you have any questions or need further assistance, please contact our support team.</p>
+        <p style="font-size: 12px; color: #777;">Thank you,<br>The School Bus Tracker Team</p>
+    </div>
+`;
+
 
 const sendOtpEmail = async (email, otp) => {
     const html = generateOtpTemplate(otp);
@@ -108,4 +123,15 @@ const sendVerificationEmail = async (email, verificationUrl) => {
     });
 };
 
-module.exports = { sendPasswordResetLink, sendVerificationEmail, sendOtpEmail };
+
+const sendDriverWelcomeEmail = async (email, firstName, password) => {
+    const html = generateDriverWelcomeTemplate(email, firstName, password);
+    await sendEmail({
+        to: email,
+        subject: "Welcome to the School Bus Tracker Platform! Your Login Credentials Inside",
+        html,
+    });
+};
+
+
+module.exports = { sendPasswordResetLink, sendVerificationEmail, sendOtpEmail, sendDriverWelcomeEmail };
