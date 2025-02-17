@@ -176,6 +176,19 @@ function moveBus() {
     animateBus();
 }
 
+function removeBusStop(stop) {
+    const markerIndex = stopMarkers.findIndex(marker => marker.getLatLng().equals(stop));
+    if (markerIndex !== -1) {
+        map.removeLayer(stopMarkers[markerIndex]);
+        stopMarkers.splice(markerIndex, 1);
+    }
+    const coordIndex = stopCoordinates.findIndex(coord => coord.equals(stop));
+    if (coordIndex !== -1) {
+        stopCoordinates.splice(coordIndex, 1);
+    }
+    updateBusStopsList();
+}
+
 async function saveRoute() {
     if (!originMarker || !destinationMarker || stopCoordinates.length === 0) {
         alert('Please create a route with at least one stop before saving.');
