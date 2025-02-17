@@ -268,5 +268,212 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+
+
+        let originMarker = null;
+        let destinationMarker = null;
+        let routeControl = null;
+        let busMarker = null;
+        let routeCoordinates = [];
+        let stopMarkers = [];
+        let stopCoordinates = [];
+
+        const map = L.map('map').setView([25.5937, 78.9629], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            zoomDelta: 0.25,
+            zoomSnap: 0,
+            attribution: '© OpenStreetMap'
+        }).addTo(map);
+
+
+        const greenIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        const redIcon = L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
+        const busIcon = L.icon({
+            iconUrl: './bus.png',
+            iconSize: [30, 30],
+            iconAnchor: [15, 15]
+        });
+
+
+        const busStopIcon = L.icon({
+            iconUrl: './assets/bus-stop.png', 
+            iconSize: [25, 25],
+            iconAnchor: [12, 12],
+            popupAnchor: [0, -10]
+        });
+        
+        let routes = [];
+        
+        async function fetchRoutes() {
+            try {
+                const response = await axios.get('/admin/getRoutes');
+                if (response.status === 200 && response.data) {
+                    routes = response.data.routes;
+                   // console.log(routes)
+                    renderRoutes();
+                }
+            } catch (error) {
+                console.error('Error fetching routes:', error);
+                alert('Failed to fetch routes.');
+            }
+        }
+
+        fetchRoutes();
+
+        function renderRoutes() {
+            const routeList = document.getElementById('route-list');
+            routeList.innerHTML = ''; 
+            console.log(routes)
+            routes.forEach(route => {
+                const routeCard = document.createElement('div');
+                routeCard.className = 'route-card';
+                routeCard.innerHTML = `
+                    <div class="route-info">
+                        <h3>Route ID: ${route.routeId}</h3>
+                        <p>From: ${route.origin.address} → To: ${route.destination.address}</p>
+                        <p>Bus: ${route.bus.regNumber} | Driver: ${route.driver.name}</p>
+                    </div>
+                    <div class="route-actions">
+                        <button class="view" onclick="viewRoute('${route.routeId}')">View</button>
+                        <button class="edit" onclick="editRoute('${route.routeId}')">Edit</button>
+                        <button class="delete" onclick="deleteRoute('${route.routeId}')">Delete</button>
+                    </div>
+                `;
+                routeList.appendChild(routeCard);
+            });
+        }
+
+
+        function viewRoute(routeId) {
+            const route = routes.find(r => r.routeId === routeId);
+            if (route) {
+                const routeDetails = document.getElementById('route-details');
+                routeDetails.innerHTML = `
+                    <p><strong>Route ID:</strong> ${route.routeId}</p>
+                    <p><strong>Origin:</strong> ${route.origin.address}</p>
+                    <p><strong>Destination:</strong> ${route.destination.address}</p>
+                    <p><strong>Bus:</strong> ${route.bus.regNumber}</p>
+                    <p><strong>Driver:</strong> ${route.driver.name}</p>
+                    <p><strong>Pickup Time:</strong> ${route.pickupTime}</p>
+                    <p><strong>Drop Time:</strong> ${route.dropTime}</p>
+                    <p><strong>Stops:</strong></p>
+                    <ul>
+                        ${route.stops.map(stop => `<li>${stop.address}</li>`).join('')}
+                    </ul>
+                `;
+                openModal('view-route-modal');
+
+                clearMarkers();
+
+                originMarker = L.marker([route.origin.coordinates.lat, route.origin.coordinates.lng], { icon: greenIcon })
+                    .addTo(map)
+                    .bindPopup(`Origin: ${route.origin.address}`)
+                    .openPopup();
+
+                destinationMarker = L.marker([route.destination.coordinates.lat, route.destination.coordinates.lng], { icon: redIcon })
+                    .addTo(map)
+                    .bindPopup(`Destination: ${route.destination.address}`)
+                    .openPopup();
+
+                route.stops.forEach(stop => {
+                    const stopMarker = L.marker([stop.coordinates.lat, stop.coordinates.lng], { icon: busStopIcon })
+                        .addTo(map)
+                        .bindPopup(`Stop: ${stop.address}`);
+                    stopMarkers.push(stopMarker);
+                    stopCoordinates.push(L.latLng(stop.coordinates.lat, stop.coordinates.lng));
+                });
+
+                createRouteWithWaypoints(route);
+            }
+        }
+
+        function clearMarkers() {
+            if (originMarker) {
+                map.removeLayer(originMarker);
+                originMarker = null;
+            }
+            if (destinationMarker) {
+                map.removeLayer(destinationMarker);
+                destinationMarker = null;
+            }
+            if (routeControl) {
+                map.removeControl(routeControl);
+                routeControl = null;
+            }
+            if (busMarker) {
+                map.removeLayer(busMarker);
+                busMarker = null;
+            }
+
+            stopMarkers.forEach(marker => map.removeLayer(marker));
+            stopMarkers = [];
+            stopCoordinates = [];
+            routeCoordinates = [];
+           // alert('Markers cleared! You can set new origin and destination points.');
+        }
+
+        function createRouteWithWaypoints(route) {
+            if (routeControl) {
+                map.removeControl(routeControl);
+            }
+
+            const waypoints = [
+                L.latLng(route.origin.coordinates.lat, route.origin.coordinates.lng),
+                ...route.stops.map(stop => L.latLng(stop.coordinates.lat, stop.coordinates.lng)),
+                L.latLng(route.destination.coordinates.lat, route.destination.coordinates.lng)
+            ];
+
+            routeControl = L.Routing.control({
+                waypoints: waypoints,
+                routeWhileDragging: false,
+                showAlternatives: false,
+            }).addTo(map);
+
+            map.fitBounds(L.latLngBounds(waypoints));
+        }
+
+
+
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+  
+        function editRoute(routeId) {
+            alert(`Edit route with ID: ${routeId}`);
+        }
+
+
+        function deleteRoute(routeId) {
+            if (confirm(`Are you sure you want to delete route ${routeId}?`)) {
+                alert(`Route ${routeId} deleted.`);
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', renderRoutes);
+    </script>
 </body>
 </html>

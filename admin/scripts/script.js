@@ -1,9 +1,10 @@
 let originMarker = null;
 let destinationMarker = null;
 let routeControl = null;
-let busMarker = null; 
+let busMarker = null;
 let routeCoordinates = [];
-
+let stopMarkers = [];
+let stopCoordinates = [];
 
 const map = L.map('map').setView([25.5937, 78.9629], 5);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -39,23 +40,61 @@ const busIcon = L.icon({
 });
 
 
-map.on('click', (e) => {
+const busStopIcon = L.icon({
+    iconUrl: './assets/bus-stop.png', 
+    iconSize: [25, 25],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -10]
+});
+
+
+map.on('click', async (e) => {
     const lat = e.latlng.lat;
     const lng = e.latlng.lng;
 
     if (!originMarker) {
         originMarker = L.marker([lat, lng], { icon: greenIcon }).addTo(map)
             .bindPopup('Origin Point').openPopup();
-        alert('Origin point set! Now click to set the destination point.');
+       // alert('Origin point set! Now click to set the destination point.');
+
+        const originAddress = await reverseGeocode(lat, lng);
+        if (originAddress) {
+            console.log("Origin Address:", originAddress);
+            alert(`Origin set at: ${originAddress}`);
+        } else {
+            alert("Could not fetch origin address.");
+        }
     } else if (!destinationMarker) {
         destinationMarker = L.marker([lat, lng], { icon: redIcon }).addTo(map)
             .bindPopup('Destination Point').openPopup();
-        alert('Destination point set! Now click "Create Route" to calculate the route.');
+       // alert('Destination point set! Now click "Create Route" to calculate the route.');
+
+        const destinationAddress = await reverseGeocode(lat, lng);
+        if (destinationAddress) {
+            console.log("Destination Address:", destinationAddress);
+            alert(`Destination set at: ${destinationAddress}`);
+        } else {
+            alert("Could not fetch destination address.");
+        }
     } else {
-        alert('Both origin and destination points are already set. Clear them to reset.');
+        
+        const stopMarker = L.marker([lat, lng], { icon: busStopIcon }).addTo(map)
+            .bindPopup(`Stop ${stopMarkers.length + 1}`).openPopup();
+        stopMarkers.push(stopMarker);
+        stopCoordinates.push(L.latLng(lat, lng));
+      //  alert(`Stop ${stopMarkers.length} added!`);
+
+      const stopAddress = await reverseGeocode(lat, lng);
+        if (stopAddress) {
+            console.log("Stop Address:", stopAddress);
+            alert(`Stop ${stopMarkers.length} added at: ${stopAddress}`);
+        } else {
+            alert("Could not fetch stop address.");
+        }
+
+        updateBusStopsList();
     }
 });
-
 
 document.getElementById("search-location-btn").onclick = async () => {
     const location = document.getElementById("search-location").value;
@@ -85,47 +124,39 @@ document.getElementById("search-location-btn").onclick = async () => {
 
 
 function createRoute() {
+
     if (!originMarker || !destinationMarker) {
         alert('Please set both origin and destination points on the map.');
         return;
     }
-
     if (routeControl) {
         map.removeControl(routeControl);
     }
-
+    
+    const originLatLng = originMarker.getLatLng();
+    const destinationLatLng = destinationMarker.getLatLng();
+    const sortedStops = sortStops(originLatLng, [...stopCoordinates], destinationLatLng);
+    const waypoints = [
+        originLatLng,
+        ...sortedStops,
+        destinationLatLng
+    ];
     routeControl = L.Routing.control({
-        waypoints: [
-            L.latLng(originMarker.getLatLng().lat, originMarker.getLatLng().lng),
-            L.latLng(destinationMarker.getLatLng().lat, destinationMarker.getLatLng().lng)
-        ],
+        waypoints: waypoints,
         routeWhileDragging: true,
-        showAlternatives: true,
-        altLineOptions: { styles: [{ color: 'blue', opacity: 0.7, weight: 4 }] }
+        showAlternatives: false,
+        altLineOptions: { styles: [{ color: 'blue', opacity: 0.7, weight: 4 }] },
     }).addTo(map);
-
 
     routeControl.on('routesfound', function (e) {
         const routes = e.routes;
         routeCoordinates = routes[0].coordinates;
-
         alert('Route created! You can now simulate the bus movement.');
-        console.log("Route : ", routeCoordinates)
+        console.log("Route : ", routeCoordinates);
+
         if (!busMarker) {
             busMarker = L.marker(routeCoordinates[0], { icon: busIcon }).addTo(map);
         }
-
-        const routeData = JSON.stringify(routeCoordinates, null, 2);
-        const fileName = `route_${new Date().toISOString().split('T')[0]}.txt`;
-        const blob = new Blob([routeData], { type: 'text/plain' });
-        const link = document.createElement('a');
-        
-        link.href = URL.createObjectURL(blob);
-        link.download = fileName;
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     });
 }
 
@@ -143,14 +174,30 @@ function clearMarkers() {
         map.removeControl(routeControl);
         routeControl = null;
     }
-    
     if (busMarker) {
         map.removeLayer(busMarker);
         busMarker = null;
     }
 
+    stopMarkers.forEach(marker => map.removeLayer(marker));
+    stopMarkers = [];
+    stopCoordinates = [];
     routeCoordinates = [];
     alert('Markers cleared! You can set new origin and destination points.');
+}
+
+
+async function reverseGeocode(lat, lng) {
+    try {
+        const response = await axios.get(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        );
+        const address = response.data.display_name;
+        return address;
+    } catch (error) {
+        console.error("Error fetching address:", error);
+        return null;
+    }
 }
 
 
@@ -159,22 +206,33 @@ function moveBus() {
         alert('No route found! Please create a route first.');
         return;
     }
-
     let index = 0;
-
     function animateBus() {
         if (index < routeCoordinates.length) {
-            busMarker.setLatLng(routeCoordinates[index]);
-            map.setView(routeCoordinates[index], map.getZoom());
-            index++;
-            setTimeout(animateBus, 1000); 
+            const currentCoord = routeCoordinates[index];
+            busMarker.setLatLng(currentCoord);
+            map.setView(currentCoord, map.getZoom());
+            const isBusStop = stopCoordinates.some(stop =>
+                stop.lat.toFixed(5) === currentCoord.lat.toFixed(5) &&
+                stop.lng.toFixed(5) === currentCoord.lng.toFixed(5)
+            );
+            if (isBusStop) {
+                console.log(`Bus stopping at: ${currentCoord.lat}, ${currentCoord.lng}`);
+                setTimeout(() => {
+                    index++;
+                    animateBus();
+                }, 3000);
+            } else {
+                index++;
+                setTimeout(animateBus, 1000);
+            }
         } else {
             alert('Bus has reached its destination!');
         }
     }
-
     animateBus();
 }
+
 
 function removeBusStop(stop) {
     const markerIndex = stopMarkers.findIndex(marker => marker.getLatLng().equals(stop));
@@ -203,6 +261,30 @@ function updateBusStopsList() {
         busStopsList.appendChild(li);
     });
 }
+
+
+function sortStops(origin, stops, destination) {
+    const sortedStops = [];
+    let currentLocation = origin;
+    while (stops.length > 0) {
+        let nearestStop = stops[0];
+        let nearestDistance = currentLocation.distanceTo(nearestStop);
+
+        for (let i = 1; i < stops.length; i++) {
+            const distance = currentLocation.distanceTo(stops[i]);
+            if (distance < nearestDistance) {
+                nearestStop = stops[i];
+                nearestDistance = distance;
+            }
+        }
+        sortedStops.push(nearestStop);
+        currentLocation = nearestStop;
+        stops = stops.filter(stop => !stop.equals(nearestStop));
+    }
+
+    return sortedStops;
+}
+
 
 async function saveRoute() {
     if (!originMarker || !destinationMarker || stopCoordinates.length === 0) {

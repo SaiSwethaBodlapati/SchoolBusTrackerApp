@@ -23,9 +23,13 @@ loginForm.addEventListener('submit', async function (event) {
         if (response.ok) {
             alert('Login successful!');
             console.log(data);
+            const token = data.user.token;
+            localStorage.setItem('token', token);
+            localStorage.setItem('role', 'User');
             if(selected.value == 'Student') window.location.href = 'dashboard.html';
             else if(selected.value == 'Admin') window.location.href = '/admin';
             else window.location.href = '/driver';
+
         } else {
             alert(data.error || 'Login failed. Please check your credentials and try again.');
         }

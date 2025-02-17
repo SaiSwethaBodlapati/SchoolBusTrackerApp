@@ -7,7 +7,7 @@ const driverModel = require('../models/driverModel.js');
 
 const Mails = require('../utils/email.js');
 const JWT = require('../utils/tokens.js');
-const { type } = require('os');
+
 
 const roleModels = {
     Admin: adminModel,
