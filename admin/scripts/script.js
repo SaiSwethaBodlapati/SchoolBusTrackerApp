@@ -175,3 +175,58 @@ function moveBus() {
 
     animateBus();
 }
+
+async function saveRoute() {
+    if (!originMarker || !destinationMarker || stopCoordinates.length === 0) {
+        alert('Please create a route with at least one stop before saving.');
+        return;
+    }
+
+    const routeData = {
+        routeId: `RT${Math.floor(Math.random() * 1000)}`,
+        origin: {
+            coordinates: {
+                lat: originMarker.getLatLng().lat,
+                lng: originMarker.getLatLng().lng
+            },
+            address: await reverseGeocode(originMarker.getLatLng().lat, originMarker.getLatLng().lng)
+        },
+        destination: {
+            coordinates: {
+                lat: destinationMarker.getLatLng().lat,
+                lng: destinationMarker.getLatLng().lng
+            },
+            address: await reverseGeocode(destinationMarker.getLatLng().lat, destinationMarker.getLatLng().lng)
+        },
+        stops: await Promise.all(stopCoordinates.map(async (stop, index) => ({
+            stopId: `S${index + 1}`,
+            coordinates: {
+                lat: stop.lat,
+                lng: stop.lng
+            },
+            address: await reverseGeocode(stop.lat, stop.lng),
+            sequence: index + 1
+        }))),
+        bus: {
+            busId: "B001",
+            regNumber: "MY01AB1234"
+        },
+        driver: {
+            driverId: "D001",
+            name: "Swetha"
+        },
+        pickupTime: "07:30 AM",
+        dropTime: "08:30 AM"
+    };
+
+    try {
+        const response = await axios.post('/admin/addRoute', routeData);
+        if (response.status === 201) {
+            alert('Route saved successfully!');
+            console.log('Route Data:', response.data);
+        }
+    } catch (error) {
+        console.error('Error saving route:', error);
+        alert('Failed to save route. Please try again.');
+    }
+}
