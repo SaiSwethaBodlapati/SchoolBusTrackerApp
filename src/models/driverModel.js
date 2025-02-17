@@ -4,17 +4,17 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const driverSchema = mongoose.Schema({
-    firstname: {
+    firstName: {
         type: String,
         required: true,
         trim: true
     },
-    lastname: {
+    lastName: {
         type: String,
         required: true,
         trim: true
     },
-    email: {
+    username: {
         type: String,
         unique: true,
         required: true,
@@ -43,8 +43,7 @@ const driverSchema = mongoose.Schema({
     licenseNumber: {
         type: String,
         required: false,
-        unique: true,
-        trim: true
+        trim: true,
     },
     vehicleDetails: {
         vehicleType: { 
@@ -60,7 +59,6 @@ const driverSchema = mongoose.Schema({
         vehicleNumberPlate: { 
             type: String, 
             required: false, 
-            unique: true, 
             trim: true 
         }
     },
@@ -88,7 +86,7 @@ driverSchema.methods.genAuthToken = async function () {
 
 
 driverSchema.statics.findByCredentials = async (email, password) => {
-    const driver = await DriverModel.findOne({ email });
+    const driver = await driverModel.findOne({ email });
     if (!driver) {
         throw new Error("Email is incorrect");
     }
