@@ -189,6 +189,21 @@ function removeBusStop(stop) {
     updateBusStopsList();
 }
 
+function updateBusStopsList() {
+    const busStopsList = document.getElementById('bus-stops-list');
+    busStopsList.innerHTML = '';
+    stopCoordinates.forEach(async (stop, index) => {
+        let add = await reverseGeocode(stop.lat.toFixed(5), stop.lng.toFixed(5))
+        const li = document.createElement('li');
+        li.className = 'fade-in';
+        li.innerHTML = `
+            <span>Stop ${index + 1}: ${add}</span>
+            <button onclick="removeBusStop(L.latLng(${stop.lat}, ${stop.lng}))">Remove</button>
+        `;
+        busStopsList.appendChild(li);
+    });
+}
+
 async function saveRoute() {
     if (!originMarker || !destinationMarker || stopCoordinates.length === 0) {
         alert('Please create a route with at least one stop before saving.');

@@ -238,6 +238,35 @@
             <a href="#" onclick="logout()">Logout</a>
         </nav>
     </header>
-    
+    <main>
+    <section id="map-section">
+        <div id="map"></div>
+    </section>
+    <div class="container">
+        <h1>Manage Routes</h1>
+        <div class="route-list" id="route-list">
+            
+        </div>
+    </div>
+
+    <div id="view-route-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Route Details</h2>
+                <span class="close" onclick="closeModal('view-route-modal')">&times;</span>
+            </div>
+            <div class="modal-body" id="route-details">
+                
+            </div>
+            <div class="modal-footer">
+                <button class="confirm" onclick="closeModal('view-route-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+</main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
 </body>
 </html>
