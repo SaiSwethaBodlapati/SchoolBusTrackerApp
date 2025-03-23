@@ -80,8 +80,7 @@ const login = async (req, res) => {
 const sendOTP = async (req, res) => {
     try {
 
-        const { email } = req.body;
-        const { role } = req.params;
+        const { email, role } = req.body;
         const Model = roleModels[role];
 
         console.log("email ",email)
@@ -118,8 +117,7 @@ const sendOTP = async (req, res) => {
 
 const validateOTP = (req, res) => {
     try {
-        const { email, otp } = req.body;
-        const { role } = req.params;
+        const { email, otp, role } = req.body;
         const Model = roleModels[role];
 
         if (!Model) {
@@ -148,8 +146,7 @@ const validateOTP = (req, res) => {
 };
 
 const resetPassword =  async (req, res) => {
-    const { username, newPassword } = req.body;
-    const { role } = req.params;
+    const { username, newPassword, role } = req.body;
     const Model = roleModels[role];
 
     if (!Model) {

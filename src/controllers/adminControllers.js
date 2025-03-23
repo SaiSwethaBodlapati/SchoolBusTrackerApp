@@ -168,6 +168,65 @@ const routeById = async (req, res) => {
     }
 };
 
+const updateStudentRoute = async (req, res) => {
+    try {
+      const { studentId } = req.params;
+      const { routeId } = req.body;
+  
+      const updatedStudent = await studentModel.findOneAndUpdate(
+        { studentId: studentId },
+        { routeId: routeId },
+        { new: true }
+      );
+  
+      if (!updatedStudent) {
+        return res.status(404).json({ message: 'Student not found' });
+      }
+  
+      res.status(200).json({ message: 'Route assigned successfully', student: updatedStudent });
+    } catch (error) {
+      console.error('Error assigning route:', error);
+      res.status(500).json({ message: 'Internal server error' });
+    }
+};
+  
+const updateDriverRoute = async (req, res) => {
+    try {
+        const { routeId } = req.params;
+        const { driverId, driverName } = req.body;
+
+        const updatedRoute = await busRouteModel.findOneAndUpdate(
+            { routeId: routeId },
+            { 
+                driver: {
+                    driverId: driverId,
+                    name: driverName
+                }
+            },
+            { 
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedRoute) {
+            return res.status(404).json({ message: 'Route not found' });
+        }
+
+        res.status(200).json({ 
+            message: 'Driver assigned to route successfully', 
+            route: updatedRoute 
+        });
+    } catch (error) {
+        console.error('Error assigning driver to route:', error);
+        res.status(500).json({ 
+            message: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+
+
 
 
 module.exports = {
@@ -178,5 +237,7 @@ module.exports = {
     deleteDriver,
     addRoute,
     getRoutes,
-    routeById
+    routeById,
+    updateStudentRoute,
+    updateDriverRoute
 }
