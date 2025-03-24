@@ -1,13 +1,9 @@
-var recipientId
-var chatContainer = document.getElementById('chat-container');
-var chatName = document.getElementById('chatName');
-var recipientRole
+
+var students = [], routes = [], drivers = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('addDriverForm');
     const tableBody = document.querySelector('#driversTable tbody');
-
-    let drivers = [];
 
     async function fetchDrivers() {
         try {
@@ -24,26 +20,110 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    async function fetchRoutes() {
+        try {
+            const response = await fetch('/admin/getRoutes');
+
+            if (response.ok) {
+                let result = await response.json();
+                routes = result.routes;
+                 console.log(routes)
+                // renderRoutes();
+            } else {
+                console.error('Failed to fetch students.');
+            }
+        } catch (error) {
+            console.error('Error fetching routes:', error);
+            alert('Failed to fetch routes.');
+        }
+    }
+
     
     function renderDrivers() {
-       tableBody.innerHTML = '';
+        tableBody.innerHTML = '';
         drivers.forEach((driver, index) => {
+            const matchedRoute = routes.find(route => route.driver && route.driver.driverId === driver.username);
+            const routeDisplay = matchedRoute 
+                ? matchedRoute.routeId 
+                : `<button class="assign-route" data-driver-id="${driver.username}" data-driver-name="${driver.firstName} ${driver.lastName}">Assign Route</button>`;
+            
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${index + 1}</td>
                 <td>${driver.firstName}</td>
                 <td>${driver.lastName}</td>
                 <td>${driver.username}</td>
+                <td>${routeDisplay}</td>
                 <td class="actions">
-                    <button class="delete" onclick="deleteDriver('${driver._id}')">Delete</button>
-                </td>
-                <td class="actions">
-                    <button class="chat" onclick="chatDriver('${driver.username}', '${driver.firstName}', '${driver.lastName}')">Chat</button>
+                    <button class="delete" onclick="deleteDriver('${driver.username}')">Delete</button>
                 </td>
             `;
             tableBody.appendChild(row);
         });
+    
+        document.querySelectorAll('.assign-route').forEach(button => {
+            button.addEventListener('click', openAssignRoutePopup);
+        });
     }
+    
+    function openAssignRoutePopup(event) {
+        const driverId = event.target.dataset.driverId;
+        const driverName = event.target.dataset.driverName;
+
+        const popup = document.createElement('div');
+        popup.className = 'popup';
+        popup.innerHTML = `
+            <div class="popup-content">
+                <h3 class='popup-head'>Assign Route</h3>
+                <div class="route-options">
+                    ${routes.filter(route => !route.driver).map(route => `
+                        <label>
+                            <input type="radio" name="routeId" value="${route.routeId}">
+                            ${route.routeId}
+                        </label>
+                    `).join('')}
+                </div>
+                <div class="popup-buttons">
+                    <button class="cancel">Cancel</button>
+                    <button class="save">Save</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(popup);
+    
+        popup.querySelector('.cancel').addEventListener('click', () => popup.remove());
+        popup.querySelector('.save').addEventListener('click', () => saveRouteAssignment(driverId, driverName, popup));
+    }
+    
+    async function saveRouteAssignment(driverId, driverName, popup) {
+        const selectedRouteId = popup.querySelector('input[name="routeId"]:checked')?.value;
+        if (!selectedRouteId) {
+            alert('Please select a route');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`/admin/assignDriverRoute/${selectedRouteId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ driverId, driverName }),
+            });
+    
+            if (response.ok) {
+                popup.remove();
+                await fetchRoutes();
+                await fetchDrivers();
+            } else {
+                alert('Failed to assign route');
+            }
+        } catch (error) {
+            console.error('Error assigning route:', error);
+            alert('Error assigning route');
+        }
+    }
+    
 
     
     form.addEventListener('submit', async (e) => {
@@ -95,16 +175,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    await fetchRoutes();
     await fetchDrivers();
 });
 
-function logout() {
-    alert('Logging out...');
-}
-
-async function chatDriver(id,fname,lname) {
-    recipientId = id;
-    chatContainer.style.display = "Block"
-    chatName.innerHTML = fname +" "+ lname;
-    recipientRole = "driver"
-}
