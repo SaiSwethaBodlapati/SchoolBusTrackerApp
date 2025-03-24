@@ -45,9 +45,58 @@ const routeByDriverId = async (req, res) => {
     }
 };
 
+const getDrivers = async (req, res) => { 
+    try {
+        const drivers = await driverModel.find();
 
+        return res.status(200).json({
+            message: "Drivers retrieved successfully.",
+            drivers,
+        });
+    } catch (error) {
+        console.error("Error in fetching drivers:", error);
+        res.status(500).json({
+            error: "Failed to fetch drivers.",
+        });
+    }
+};
+
+const getStudents = async (req, res) => { 
+    try {
+        const students = await studentModel.find();
+
+        return res.status(200).json({
+            message: "Students retrieved successfully.",
+            students,
+        });
+    } catch (error) {
+        console.error("Error in fetching students :", error);
+        res.status(500).json({
+            error: "Failed to fetch students.",
+        });
+    }
+};
+
+const getAdmins = async (req,res) => {
+    try{
+        const admins = await adminModel.find();
+
+        return res.status(200).json({
+            message: "Admins retrieved successfully.",
+            admins,
+        })
+    } catch (error) {
+        console.error("Error in fetching admins :", error);
+        res.status(500).json({
+            error: "Failed to fetch admins.",
+        });
+    }
+}
 
 module.exports = {
     getRoutes,
-    routeByDriverId
+    routeByDriverId,
+    getDrivers,
+    getStudents,
+    getAdmins
 }
