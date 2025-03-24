@@ -18,8 +18,9 @@ router.post('/drivers', adminControllers.addDriver);
 router.post('/addRoute', adminControllers.addRoute);
 
 
-router.put('/drivers/:id', adminControllers.editDriver); 
-
+router.put('/drivers/:id', adminControllers.editDriver);
+router.put('/assignStudentRoute/:studentId', adminControllers.updateStudentRoute);
+router.put('/assignDriverRoute/:routeId', adminControllers.updateDriverRoute);
 
 router.delete('/drivers/:id', adminControllers.deleteDriver);
 
