@@ -94,7 +94,12 @@ const studentSchema = new mongoose.Schema({
     },
     token: {
         type: String
-    }
+    },
+    routeId: {
+        type: String,
+        required: false,
+        trim: true,
+    },
 });
 
 studentSchema.methods.toJSON = function () {
