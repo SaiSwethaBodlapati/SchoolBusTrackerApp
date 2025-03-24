@@ -12,6 +12,8 @@ router.get('/test', (req,res) => {
 ;
 router.get('/getRoutes', driverControllers.getRoutes);
 router.get('/getRoute/:driverId', driverControllers.routeByDriverId);
+router.get('/admins', driverControllers.getAdmins);
+router.get('/students', adminControllers.getStudents);
 
 
 module.exports = router;

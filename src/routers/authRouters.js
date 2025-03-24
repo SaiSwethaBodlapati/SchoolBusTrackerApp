@@ -8,9 +8,9 @@ router.get('/test', (req,res) => {
 
 router.post('/login', authControllers.login);
 router.post('/register/:role', authControllers.register);
-router.post('/sendOTP/:role', authControllers.sendOTP);
-router.post('/validateOTP/:role', authControllers.validateOTP);
+router.post('/sendOTP', authControllers.sendOTP);
+router.post('/validateOTP', authControllers.validateOTP);
 
-router.put('/resetPassword/:role', authControllers.resetPassword);
+router.put('/resetPassword', authControllers.resetPassword);
 
 module.exports = router;
