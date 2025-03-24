@@ -227,12 +227,13 @@
             color: #fff;
         }
     </style>
+    <script src="./scripts/auth.js"></script>
 </head>
 <body>
     <header>
         <div class="title"><h2>Driver - School Bus Tracker <span>🚌</span></h2></div>
         <nav>
-            <a href="index.html">Home</a>
+            <a href="#">Home</a>
             <a href="chats.html">Chats</a>
             <a href="students.html">Attendance</a>
             <a href="#" onclick="logout()">Logout</a>
@@ -324,6 +325,7 @@
         async function fetchRoutes() {
             try {
                 const response = await axios.get(`/driver/getRoute/${localStorage.getItem('email')}`);
+                console.log(response)
                 if (response.status === 200 && response.data) {
                     routes = response.data.route;
                     console.log(routes)
