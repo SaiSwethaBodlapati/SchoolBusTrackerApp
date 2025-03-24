@@ -6,11 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Bus Tracker - Support</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            box-sizing: border-box;
+        }
+            body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e2f;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         header {
@@ -80,9 +86,12 @@
             </h1>
         </nav>
         <nav>
+            <a href="dashboard.html">Home</a>
             <a href="chats.html">Chat</a>
             <a href="about.html">About</a>
+            <a href="profile.html">Profile</a>
             <a href="contact.html">Contact</a>
+            <a onclick="logout()">Logout</a>
         </nav>
     </header>
 
