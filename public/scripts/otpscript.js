@@ -10,6 +10,9 @@ const step1 = document.querySelector(".step1"),
       verifyButton = document.querySelector(".verifyButton"),
       submitButton = document.querySelector(".submitButton");
 
+const urlParams = new URLSearchParams(window.location.search);
+const role = urlParams.get("role");
+
 let OTP="";
 window.addEventListener("load", () => {
     step2.style.display = "none";
@@ -49,12 +52,12 @@ inputs.forEach((input)=>{
 nextButton.addEventListener("click", async() => {
     nextButton.innerHTML="&#9889; Sending...";
     try {
-        const response = await fetch('/auth/sendOTP/Student', {
+        const response = await fetch('/auth/sendOTP', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ email: emailAddress.value }),
+            body: JSON.stringify({ email: emailAddress.value, role: role }),
         });
 
         const data = await response.json();
@@ -86,12 +89,12 @@ verifyButton.addEventListener("click", async() => {
 
     if(values.length == 4) {
         try {
-            const response = await fetch('/auth/validateOTP/Student', {
+            const response = await fetch('/auth/validateOTP', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: emailAddress.value, otp : values }),
+                body: JSON.stringify({ email: emailAddress.value, otp : values, role: role }),
             });
     
             const data = await response.json();
@@ -121,12 +124,12 @@ verifyButton.addEventListener("click", async() => {
 submitButton.addEventListener("click", async() => {
     submitButton.innerHTML="&#9889; Changing...";
     try {
-        const response = await fetch('/auth/resetPassword/Student', {
+        const response = await fetch('/auth/resetPassword', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username: emailAddress.value, newPassword: newPassword.value }),
+            body: JSON.stringify({ username: emailAddress.value, newPassword: newPassword.value, role: role }),
         });
 
         const data = await response.json();
