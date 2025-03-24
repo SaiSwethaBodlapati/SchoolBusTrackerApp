@@ -11,6 +11,8 @@ const DirectoryPath = path.join(__dirname, './public');
 const authRouter = require('./src/routers/authRouters.js');
 const adminRouter = require('./src/routers/adminRouters.js');
 const driverRouter = require('./src/routers/driverRouters.js');
+const studentRouter = require('./src/routers/studentRouters.js');
+const Message = require("./src/models/messageModel.js"); 
 const connect = require("./src/db/connectDB.js");
 
 const app = express();
@@ -36,20 +38,17 @@ app.use("/admin", express.static(path.join(__dirname, "./admin")));
 app.use('/auth', authRouter);
 app.use('/admin', adminRouter);
 app.use('/driver', driverRouter);
+app.use('/student', studentRouter);
 
 
 io.on("connection", (socket) => {
-
     const { id, role } = socket.handshake.auth;
 
     if (id && role) {
-
         if (!userSocketMap[role]) {
             userSocketMap[role] = {};
         }
-
         userSocketMap[role][id] = socket.id;
-
         console.log(`User connected with ID: ${id}, Role: ${role}, Socket ID: ${socket.id}`);
     } else {
         console.log("Connection attempt without valid ID or Role.");
@@ -57,9 +56,7 @@ io.on("connection", (socket) => {
         return;
     }
 
-
-    socket.emit("welcome", `Welcome ${role} with ID: ${id}`);
-
+    socket.emit("welcome", { msg: `Welcome ${role} with ID: ${id}` });
 
     socket.on("disconnect", () => {
         if (id && role && userSocketMap[role]) {
@@ -68,14 +65,40 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("sendMessage", ({ recipientId, recipientRole, message }) => {
-		console.log("Send msg ",userSocketMap, recipientId, recipientRole, message)
-        if (userSocketMap[recipientRole] && userSocketMap[recipientRole][recipientId]) {
-            const recipientSocketId = userSocketMap[recipientRole][recipientId];
-            io.to(recipientSocketId).emit("receiveMessage", { from: id, message });
-            console.log(`Message sent from ${id} to ${recipientId} (${recipientRole})`);
-        } else {
-            console.log(`Recipient with ID ${recipientId} and Role ${recipientRole} is not connected.`);
+    
+    socket.on("sendMessage", async ({ senderId, recipientId, recipientRole, message }) => {
+        try {
+            const newMessage = new Message({ senderId, recipientId, recipientRole, message,});
+            await newMessage.save();
+            console.log(userSocketMap)
+            console.log(`Message saved: ${senderId} → ${recipientId}`);
+
+            if (userSocketMap[recipientRole] && userSocketMap[recipientRole][recipientId]) {
+                const recipientSocketId = userSocketMap[recipientRole][recipientId];
+                io.to(recipientSocketId).emit("receiveMessage", { from: senderId, message });
+                console.log(`Message sent to ${recipientId} (${recipientRole})`);
+            } else {
+                console.log(`Recipient ${recipientId} (${recipientRole}) is not connected.`);
+            }
+        } catch (error) {
+            console.error("Error saving message:", error);
+        }
+    });
+
+
+    socket.on("fetchMessages", async ({ senderId, recipientId }, callback) => {
+        try {
+            const messages = await Message.find({
+                $or: [
+                    { senderId, recipientId },
+                    { senderId: recipientId, recipientId: senderId },
+                ],
+            }).sort({ createdAt: 1 });
+
+            callback(messages);
+        } catch (error) {
+            console.error("Error fetching messages:", error);
+            callback([]);
         }
     });
 
@@ -90,7 +113,6 @@ io.on("connection", (socket) => {
         }
     });
 });
-
 
 connect().then(() => {
     try {
