@@ -119,6 +119,7 @@
             font-size: 1rem;
             cursor: pointer;
             transition: background 0.3s ease;
+            margin: auto;
         }
 
         .form button:hover {
@@ -179,11 +180,106 @@
         .actions button:hover {
             opacity: 0.9;
         }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #2a2a40; 
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25); 
+            z-index: 1001; 
+        }
+
+        .popup h3 {
+            margin-top: 0;
+            color: #ffffff;
+            text-align: center;
+            margin-bottom: 40px;
+            text-decoration: underline;
+        }
+
+        .route-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .route-options label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            color: #000;
+            background-color: #ffffff;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .route-options label:hover {
+            background-color: #c9c9c9;
+        }
+
+        .route-options input[type="radio"] {
+            display: block;
+            margin-right: 10px;
+        }
+
+        .route-options input[type="radio"]:checked + span {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .popup-buttons{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button.assign-bus {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        button.save {
+            background-color: #28a745;
+            color: #fff;
+            
+        }
+
+        button.cancel {
+            background-color: #dc3545;
+            color: #fff;
+        }
     </style>
     <link rel="stylesheet" href="./css/chat.css">
+    <link rel="stylesheet" href="./css/search.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700,300">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/material-design-iconic-font/2.1.2/css/material-design-iconic-font.min.css">
     <script src="/socket.io/socket.io.js"></script>
+    <script src="./scripts/auth.js"></script>
 </head>
 
 <body>
@@ -262,3 +358,26 @@
                 }
             }
         }
+
+        function sortTable(colIndex) {
+            let table = document.getElementById("driversTable");
+            let tbody = table.querySelector("tbody");
+            let rows = Array.from(table.rows).slice(1);
+            let header = table.rows[0].cells[colIndex];
+            let isAscending = header.classList.toggle("desc") ? -1 : 1;
+            
+            rows.sort((rowA, rowB) => {
+                let a = rowA.cells[colIndex].textContent.toLowerCase();
+                let b = rowB.cells[colIndex].textContent.toLowerCase();
+                return a.localeCompare(b) * isAscending;
+            });
+            
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+                tbody.appendChild(row);
+            });
+        }
+
+    </script>
+</body>
+</html>
