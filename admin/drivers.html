@@ -202,7 +202,7 @@
     <main class="main-content">
         <div class="container">
             <h2>Manage Drivers</h2>
-            <!-- Add Driver Form -->
+            
             <form id="addDriverForm" class="form">
                 <input type="text" id="firstName" placeholder="First Name" required>
                 <input type="text" id="lastName" placeholder="Last Name" required>
@@ -210,20 +210,22 @@
                 <button type="submit">Add Driver</button>
             </form>
 
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search Driver..." onkeyup="searchDrivers()">
+            </div>
+            
             <table id="driversTable">
                 <thead>
                     <tr>
                         <th>S.No</th>
-                        <th>First Name</th>
-                        <th>Last Name</th>
-                        <th>Username</th>
+                        <th class="sortable" onclick="sortTable(1)">First Name</th>
+                        <th class="sortable" onclick="sortTable(2)">Last Name</th>
+                        <th class="sortable" onclick="sortTable(3)">Username</th>
+                        <th>Bus Route</th>
                         <th>Delete</th>
-                        <th>Chat</th>
                     </tr>
                 </thead>
-                <tbody>
-
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </main>
@@ -244,6 +246,19 @@
     
 
     <script src="./scripts/drivers.js"></script>
-    <script src="./scripts/chat.js"></script>
-</body>
-</html>
+    <script>
+
+        function searchDrivers() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let table = document.getElementById('driversTable');
+            let rows = table.getElementsByTagName('tr');
+            
+            for (let i = 1; i < rows.length; i++) {
+                let firstName = rows[i].getElementsByTagName('td')[1];
+                let lastName = rows[i].getElementsByTagName('td')[2];
+                if (firstName && lastName) {
+                    let textValue = firstName.textContent.toLowerCase() + ' ' + lastName.textContent.toLowerCase();
+                    rows[i].style.display = textValue.includes(input) ? '' : 'none';
+                }
+            }
+        }
